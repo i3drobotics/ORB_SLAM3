@@ -143,8 +143,8 @@ IF(WIN32)
    set(DBoW_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/Release/DBoW2.lib)
    set(g2o_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/Release/g2o.lib)
 else(WIN32)
-   set(DBoW_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/DBoW2.lib)
-   set(g2o_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/g2o.lib)
+   set(DBoW_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so)
+   set(g2o_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so)
 endif(WIN32)
 
 target_link_libraries(${PROJECT_NAME}

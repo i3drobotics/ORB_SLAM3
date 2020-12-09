@@ -5,7 +5,7 @@ cd $SCRIPTPATH
 
 install_folder=$SCRIPTPATH/install
 opencv_dir=$SCRIPTPATH/../opencv/install
-boost_root=$SCRIPTPATH/../boost/boost_1_74_0
+boost_root=$SCRIPTPATH/../boost/boost_1_74_0 # (Windows only, Linux installs from apt-get)
 echo $boost_root
 # Define Visual Studio version to use in CMake (Windows Only)
 vs_version="Visual Studio 15 2017 Win64"
@@ -18,15 +18,17 @@ if [[ "$OSTYPE" == "msys" ]]; then
 
     # Setup CMake build
     cmake -G "$vs_version" \
+        -D CMAKE_INSTALL_PREFIX=$install_folder \
         -D OpenCV_DIR=$opencv_dir \
         -D BOOST_ROOT=$boost_root .. 
 
     # Build
     cmake --build . --config Release --parallel $((`nproc`+1)) -j $((`nproc`+1))
 else
-    cmake -D \
-        -D OpenCV_DIR=$opencv_dir \
-        -D BOOST_ROOT=$boost_root .. 
+    # Setup CMake build
+    cmake \
+        -D CMAKE_INSTALL_PREFIX=$install_folder \
+        -D OpenCV_DIR=$opencv_dir .. 
     # Build
     make -j$((`nproc`+1))
 fi

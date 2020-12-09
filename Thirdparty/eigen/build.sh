@@ -31,7 +31,8 @@ if [[ "$OSTYPE" == "msys" ]]; then
     # Build
     cmake --build . --config Release --target install --parallel $((`nproc`+1)) -j $((`nproc`+1))
 else
-    cmake -D -D CMAKE_INSTALL_PREFIX=$install_folder .. 
+    # Setup CMake build
+    cmake -D CMAKE_INSTALL_PREFIX=$install_folder .. 
     # Build
     make -j$((`nproc`+1))
     make install

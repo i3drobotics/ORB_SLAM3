@@ -6,6 +6,12 @@ cd $SCRIPTPATH
 echo "Configuring Thirdparty/eigen ..."
 cd Thirdparty/eigen
 ./build.sh
+cd $SCRIPTPATH
+
+echo "Configuring Thirdparty/boost ..."
+cd Thirdparty/boost
+./build.sh
+cd $SCRIPTPATH
 
 echo "Configuring Thirdparty/Pangolin ..."
 cd Thirdparty/Pangolin

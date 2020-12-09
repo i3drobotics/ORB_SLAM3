@@ -3,23 +3,32 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH
 
-boost_version=1.74.0
-boost_version_=${boost_version//[.]/_}
+if [[ "$OSTYPE" == "msys" ]]; then
 
-downloadfile=boost_$boost_version_.tar.gz
-url=https://sourceforge.net/projects/boost/files/boost/$boost_version/$downloadfile/download
-echo $url
+    boost_version=1.74.0
+    boost_version_=${boost_version//[.]/_}
 
-echo Downloading boost...
-#curl -o "$downloadfile" -L $url
+    downloadfile=boost_$boost_version_.tar.gz
+    url=https://sourceforge.net/projects/boost/files/boost/$boost_version/$downloadfile/download
+    echo $url
 
-echo Extracting boost...
-#tar -xf $downloadfile
+    echo Downloading boost...
+    curl -o "$downloadfile" -L $url
 
-cd boost_$boost_version_
+    echo Extracting boost...
+    tar -xf $downloadfile
 
-cmd.exe /c "bootstrap"
-./b2 --with-serialization --toolset=msvc-14.1 architecture=x86 address-model=64 link=static
+    cd boost_$boost_version_
 
-cd $SCRIPTPATH
-rm $downloadfile
+    cmd.exe /c "bootstrap"
+    ./b2 --with-serialization --toolset=msvc-14.1 architecture=x86 address-model=64 link=static
+
+    cd $SCRIPTPATH
+    rm $downloadfile
+
+else
+    # Install boost
+    sudo apt install libboost-dev
+    sudo apt install libboost-all-dev
+
+fi

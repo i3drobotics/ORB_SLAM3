@@ -95,7 +95,11 @@ namespace g2o {
           const SparseMatrixBlock& A = _diagonal[i];
           // destVec += *A.transpose() * srcVec (according to the sub-vector parts)
           //internal::axpy(A, srcVec, srcOffset, destVec, destOffset);
-		  internal::template axpy<typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock>(A, srcVec, srcOffset, destVec, destOffset);
+          #ifdef _WIN32
+          internal::template axpy<typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock>(A, srcVec, srcOffset, destVec, destOffset);
+          #else
+          internal::atxpy(A, srcVec, srcOffset, destVec, destOffset);
+          #endif
         }
       }
 

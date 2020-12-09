@@ -26,6 +26,10 @@ if [[ "$OSTYPE" == "msys" ]]; then
     # Build
     cmake --build . --config Release --target install --parallel $((`nproc`+1)) -j $((`nproc`+1))
 else
+    # Install dependencies
+    sudo apt install libglew-dev
+    
+    # Setup CMake build
     cmake \
         -D CMAKE_BUILD_TYPE=Release \
         -D CMAKE_INSTALL_PREFIX=$install_folder .. 

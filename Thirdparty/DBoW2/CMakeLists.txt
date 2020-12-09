@@ -24,11 +24,9 @@ set(SRCS_DUTILS
   DUtils/Random.cpp
   DUtils/Timestamp.cpp)
 
-set(Boost_USE_STATIC_LIBS OFF) 
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost COMPONENTS serialization REQUIRED)
 if(NOT Boost_FOUND)
-   message(FATAL_ERROR "Boost not found.")
+    message(FATAL_ERROR "Boost not found.")
 endif()
 
 find_package(OpenCV 4.0 QUIET)
@@ -45,6 +43,6 @@ endif()
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
-add_library(DBoW2 STATIC ${SRCS_DBOW2} ${SRCS_DUTILS})
+add_library(DBoW2 SHARED ${SRCS_DBOW2} ${SRCS_DUTILS})
 target_link_libraries(DBoW2 ${OpenCV_LIBS})
 
