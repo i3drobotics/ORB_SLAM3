@@ -3,7 +3,7 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH
 
-opencv_version=3.4.12
+opencv_version=4.5.0
 install_folder=$SCRIPTPATH/install
 # Define Visual Studio version to use in CMake (Windows Only)
 vs_version="Visual Studio 15 2017 Win64"

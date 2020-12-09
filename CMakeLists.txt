@@ -145,6 +145,7 @@ IF(WIN32)
 else(WIN32)
    set(DBoW_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so)
    set(g2o_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so)
+   set(extra_LIBS -lcrypto)
 endif(WIN32)
 
 target_link_libraries(${PROJECT_NAME}
@@ -153,6 +154,7 @@ target_link_libraries(${PROJECT_NAME}
    ${DBoW_LIBS}
    ${g2o_LIBS}
    ${Boost_LIBRARIES}
+   ${extra_LIBS}
 )
 
 # Build examples
