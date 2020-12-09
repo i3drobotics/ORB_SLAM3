@@ -23,7 +23,7 @@
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iomanip>
-#include <openssl/md5.h>
+//#include <openssl/md5.h>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -32,6 +32,10 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <usleep.h>
+#endif
 
 namespace ORB_SLAM3
 {
@@ -237,6 +241,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
+				//std::this_thread::sleep_for(std::chrono::microseconds(1000));
                 usleep(1000);
             }
 
@@ -303,6 +308,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
+				//std::this_thread::sleep_for(std::chrono::microseconds(1000));
                 usleep(1000);
             }
 
@@ -361,6 +367,7 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp, const
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
+				//std::this_thread::sleep_for(std::chrono::microseconds(1000));
                 usleep(1000);
             }
 
@@ -453,6 +460,7 @@ void System::Shutdown()
     {
         mpViewer->RequestFinish();
         while(!mpViewer->isFinished())
+			//std::this_thread::sleep_for(std::chrono::microseconds(5000));
             usleep(5000);
     }
 
@@ -468,6 +476,7 @@ void System::Shutdown()
             cout << "break anyway..." << endl;
             break;
         }
+		//std::this_thread::sleep_for(std::chrono::microseconds(5000));
         usleep(5000);
     }
 

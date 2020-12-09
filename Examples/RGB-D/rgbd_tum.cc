@@ -23,6 +23,10 @@
 
 #include<opencv2/core/core.hpp>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <usleep.h>
+#endif
+
 #include<System.h>
 
 using namespace std;
@@ -112,6 +116,7 @@ int main(int argc, char **argv)
             T = tframe-vTimestamps[ni-1];
 
         if(ttrack<T)
+			//std::this_thread::sleep_for(std::chrono::microseconds((long)((T - ttrack)*1e6)));
             usleep((T-ttrack)*1e6);
     }
 

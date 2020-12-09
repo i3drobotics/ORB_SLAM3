@@ -16,6 +16,7 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
+//#define no_init_all deprecated
 #include<iostream>
 #include<algorithm>
 #include<fstream>
@@ -23,6 +24,10 @@
 #include<iomanip>
 
 #include<opencv2/core/core.hpp>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <usleep.h>
+#endif
 
 #include"System.h"
 
@@ -98,6 +103,7 @@ int main(int argc, char **argv)
             T = tframe-vTimestamps[ni-1];
 
         if(ttrack<T)
+			//std::this_thread::sleep_for(std::chrono::microseconds((long)((T - ttrack)*1e6)));
             usleep((T-ttrack)*1e6);
     }
 

@@ -47,3 +47,13 @@ cmake-build-debug/
 
 *.pyc
 *.osa
+Thirdparty/opencv/opencv
+Thirdparty/opencv/install
+Thirdparty/eigen/eigen
+Thirdparty/Pangolin/Pangolin
+Thirdparty/Pangolin/install
+Thirdparty/boost/boost_1_74_0.tar.gz
+Thirdparty/boost/boost_1_74_0
+Thirdparty/eigen/install
+Examples/*/Release
+Datasets/*

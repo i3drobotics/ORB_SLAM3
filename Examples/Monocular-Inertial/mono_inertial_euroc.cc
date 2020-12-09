@@ -24,7 +24,12 @@
 #include <ctime>
 #include <sstream>
 
-#include<opencv2/core/core.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <usleep.h>
+#endif
 
 #include<System.h>
 #include "ImuTypes.h"
@@ -134,7 +139,7 @@ int main(int argc, char *argv[])
         for(int ni=0; ni<nImages[seq]; ni++, proccIm++)
         {
             // Read image from file
-            im = cv::imread(vstrImageFilenames[seq][ni],CV_LOAD_IMAGE_UNCHANGED);
+            im = cv::imread(vstrImageFilenames[seq][ni], cv::IMREAD_UNCHANGED);
 
             double tframe = vTimestampsCam[seq][ni];
 
@@ -194,6 +199,7 @@ int main(int argc, char *argv[])
                 T = tframe-vTimestampsCam[seq][ni-1];
 
             if(ttrack<T)
+				//std::this_thread::sleep_for(std::chrono::microseconds((long)((T - ttrack)*1e6)));
                 usleep((T-ttrack)*1e6); // 1e6
         }
         if(seq < num_seq - 1)

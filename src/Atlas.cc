@@ -23,6 +23,10 @@
 #include "Pinhole.h"
 #include "KannalaBrandt8.h"
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <usleep.h>
+#endif
+
 namespace ORB_SLAM3
 {
 
@@ -212,6 +216,7 @@ Map* Atlas::GetCurrentMap()
     if(!mpCurrentMap)
         CreateNewMap();
     while(mpCurrentMap->IsBad())
+		//std::this_thread::sleep_for(std::chrono::microseconds(3000));
         usleep(3000);
 
     return mpCurrentMap;

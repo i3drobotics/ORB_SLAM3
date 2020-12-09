@@ -16,7 +16,7 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+#include <opencv2/imgcodecs.hpp>
 #include "Optimizer.h"
 
 
@@ -2207,7 +2207,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
                 mspFinalObservationKFs[pKFi] = finalNumberMPs;
             }
 
-            f_lba.close();
+            //f_lba.close();
         }
     }
 
@@ -6640,9 +6640,9 @@ void Optimizer::LocalBundleAdjustment(KeyFrame* pMainKF,vector<KeyFrame*> vpAdju
             if(bShowImages)
             {
                 string strNameFile = pKFi->mNameFile;
-                cv::Mat imLeft = cv::imread(strNameFile, CV_LOAD_IMAGE_UNCHANGED);
+                cv::Mat imLeft = cv::imread(strNameFile, cv::IMREAD_UNCHANGED);
 
-                cv::cvtColor(imLeft, imLeft, CV_GRAY2BGR);
+                cv::cvtColor(imLeft, imLeft, cv::COLOR_GRAY2BGR);
 
                 int numPointsMono = 0, numPointsStereo = 0;
                 int numPointsMonoBad = 0, numPointsStereoBad = 0;
