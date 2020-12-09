@@ -56,4 +56,4 @@ Thirdparty/boost/boost_1_74_0.tar.gz
 Thirdparty/boost/boost_1_74_0
 Thirdparty/eigen/install
 Examples/*/Release
-Datasets/*
+Datasets/EuRoC/MH*
