@@ -5,7 +5,7 @@ cd $SCRIPTPATH
 
 install_folder=$SCRIPTPATH/install
 opencv_dir=$SCRIPTPATH/../opencv/install
-boost_root=$SCRIPTPATH/../boost/boost_1_74_0 # (Windows only, Linux installs from apt-get)
+boost_root=$SCRIPTPATH/../boost/boost_1_74_0/stage/lib/cmake # (Windows only, Linux installs from apt-get)
 echo $boost_root
 # Define Visual Studio version to use in CMake (Windows Only)
 vs_version="Visual Studio 15 2017 Win64"

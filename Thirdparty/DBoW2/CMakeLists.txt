@@ -42,7 +42,17 @@ endif()
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-include_directories(${OpenCV_INCLUDE_DIRS})
-add_library(DBoW2 SHARED ${SRCS_DBOW2} ${SRCS_DUTILS})
-target_link_libraries(DBoW2 ${OpenCV_LIBS})
+include_directories(
+  ${OpenCV_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
+if (WIN32)
+  add_library(DBoW2 STATIC ${SRCS_DBOW2} ${SRCS_DUTILS})
+else (WIN32)
+  add_library(DBoW2 SHARED ${SRCS_DBOW2} ${SRCS_DUTILS})
+endif()
+target_link_libraries(DBoW2 
+  ${OpenCV_LIBS}
+  ${Boost_LIBRARIES}  
+)
 
