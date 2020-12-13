@@ -75,6 +75,10 @@ include_directories(
    ${OpenCV_INCLUDE_DIRS}
    ${Boost_INCLUDE_DIRS}
 )
+if (WIN32)
+   include_directories(${PROJECT_SOURCE_DIR}/winutil)
+   set(WIN_EXTRA_SRC winutil/usleep.cpp)
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
@@ -133,10 +137,11 @@ include/CameraModels/KannalaBrandt8.h
 include/OptimizableTypes.h
 include/MLPnPsolver.h
 include/TwoViewReconstruction.h
-src/TwoViewReconstruction.cc)
+src/TwoViewReconstruction.cc
+${WIN_EXTRA_SRC}
+)
 
 if (WIN32)
-	include_directories(${PROJECT_SOURCE_DIR}/winutil)
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE:MULTIPLE")
 endif (WIN32)
