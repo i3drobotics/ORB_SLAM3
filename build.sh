@@ -6,7 +6,6 @@ cd $SCRIPTPATH
 if [[ "$OSTYPE" == "msys" ]]; then
     opencv_dir=$SCRIPTPATH/Thirdparty/opencv/install
     boost_root=$SCRIPTPATH/Thirdparty/boost/boost_1_74_0/stage/lib/cmake  # (Windows only, Linux installs from apt-get)
-    vs_version="Visual Studio 15 2017 Win64" # Windows only
 else
     opencv_dir=$SCRIPTPATH/Thirdparty/opencv/install/lib/cmake/opencv4
 fi
@@ -27,7 +26,7 @@ cd build
 
 if [[ "$OSTYPE" == "msys" ]]; then
     # Setup CMake build
-    cmake -G "$vs_version" \
+    cmake \
         -D CMAKE_BUILD_TYPE=RELEASE \
         -D OpenCV_DIR=$opencv_dir \
         -D BOOST_ROOT=$boost_root \

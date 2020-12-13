@@ -13,9 +13,6 @@ git clone https://gitlab.com/libeigen/eigen.git
 cd eigen
 git checkout tags/$eigen_version
 
-# Define Visual Studio version to use in CMake (Windows Only)
-vs_version="Visual Studio 15 2017 Win64"
-
 # Create install folder
 mkdir $install_folder
 
@@ -26,7 +23,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
     # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
 
     # Setup CMake build
-    cmake -G "$vs_version" -D CMAKE_INSTALL_PREFIX=$install_folder .. 
+    cmake -D CMAKE_INSTALL_PREFIX=$install_folder .. 
 
     # Build
     cmake --build . --config Release --target install --parallel $((`nproc`+1)) -j $((`nproc`+1))

@@ -3,19 +3,27 @@ name: Build
 on: [push]
 
 jobs:
-    build:
-        runs-on: ${{ matrix.os }}
-        strategy:
-          matrix:
-            os: [ubuntu-latest, windows-latest]
-
+    build-windows:
+        runs-on: windows-latest
         steps:
           - uses: actions/checkout@v2
           - name: Install 3rdparty
-            shell: bash
+            shell: cmd
             run: |
-              ./build_thirdparty.sh
+              call "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+              bash build_thirdparty.sh
+          - name: Build
+            shell: cmd
+            run: |
+              call "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+              bash build.sh
+    build-linux:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+          - name: Install 3rdparty
+            shell: 
+            run: ./build_thirdparty.sh
           - name: Build
             shell: bash
-            run: |
-              ./build.sh
+            run: ./build.sh

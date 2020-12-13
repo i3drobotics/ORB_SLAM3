@@ -5,8 +5,6 @@ cd $SCRIPTPATH
 
 opencv_version=4.5.0
 install_folder=$SCRIPTPATH/install
-# Define Visual Studio version to use in CMake (Windows Only)
-vs_version="Visual Studio 15 2017 Win64"
 
 # download opencv repo
 git clone https://github.com/opencv/opencv.git
@@ -46,7 +44,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
     # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
 
     # Setup CMake build (options chosen for a fast build)
-    cmake -G "$vs_version" $cmake_options ..
+    cmake $cmake_options ..
 
     # Build and install OpenCV
     cmake --build . --config Release --target install --parallel $((`nproc`+1)) -j $((`nproc`+1))
