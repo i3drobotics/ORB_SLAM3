@@ -1,0 +1,21 @@
+name: Build
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+          matrix:
+            os: [ubuntu-latest, windows-latest]
+
+        steps:
+          - uses: actions/checkout@v2
+          - name: Install 3rdparty
+            shell: bash
+            run: |
+              ./build_thirdparty.sh
+          - name: Build
+            shell: bash
+            run: |
+              ./build.sh
