@@ -123,7 +123,7 @@ namespace g2o {
             int srcOffset = rowBaseOfBlock(it->row);
             // destVec += *a.transpose() * srcVec (according to the sub-vector parts)
             #ifdef _WIN32
-            internal::template axpy<typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock>(*a, srcVec, srcOffset, destVec, destOffset);
+            internal::template atxpy<typename SparseBlockMatrix<MatrixType>::SparseMatrixBlock>(*a, srcVec, srcOffset, destVec, destOffset);
             #else
             internal::atxpy(*a, srcVec, srcOffset, destVec, destOffset);
 			      #endif

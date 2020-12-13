@@ -18,12 +18,6 @@
 #include <iomanip>
 
 #ifdef _WIN32
-#ifndef WIN32
-#define WIN32
-#endif
-#endif
-
-#ifdef WIN32
 #include <sys/timeb.h>
 #define sprintf sprintf_s
 #else
@@ -55,7 +49,7 @@ bool Timestamp::empty() const
 
 void Timestamp::setToCurrentTime(){
 	
-#ifdef WIN32
+#ifdef _WIN32
 	struct __timeb32 timebuffer;
 	_ftime32_s( &timebuffer ); // C4996
 	// Note: _ftime is deprecated; consider using _ftime_s instead

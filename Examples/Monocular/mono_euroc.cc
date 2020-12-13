@@ -26,7 +26,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#ifdef _WIN32
 #include <usleep.h>
 #endif
 
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
     #endif
 
             // Pass the image to the SLAM system
-            // cout << "tframe = " << tframe << endl;
+            cout << "tframe = " << tframe << endl;
             SLAM.TrackMonocular(im,tframe); // TODO change to monocular_inertial
 
     #ifdef COMPILEDWITHC11
@@ -134,9 +134,11 @@ int main(int argc, char **argv)
             else if(ni>0)
                 T = tframe-vTimestampsCam[seq][ni-1];
 
-            if(ttrack<T)
+            if(ttrack<T){
 				//std::this_thread::sleep_for(std::chrono::microseconds((long)((T - ttrack)*1e6)));
+                std::cout << (T-ttrack)*1e6 << std::endl;
                 usleep((T-ttrack)*1e6); // 1e6
+            }
         }
 
         if(seq < num_seq - 1)
