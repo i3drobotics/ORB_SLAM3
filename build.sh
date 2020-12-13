@@ -10,11 +10,11 @@ if [[ "$OSTYPE" == "msys" ]]; then
 else
     opencv_dir=$SCRIPTPATH/Thirdparty/opencv/install/lib/cmake/opencv4
 fi
-eigen_include_dir=$SCRIPTPATH/Thirdparty/eigen/install/include/eigen3
+eigen_root=$SCRIPTPATH/Thirdparty/eigen/install/share/eigen3/cmake
 pangolin_dir=$SCRIPTPATH/Thirdparty/Pangolin/install/lib/cmake/Pangolin
 
 # Build thirdparty libraries
-./build_thirdparty.sh
+#./build_thirdparty.sh
 
 echo "Uncompress vocabulary ..."
 cd $SCRIPTPATH/Vocabulary
@@ -31,7 +31,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
         -D CMAKE_BUILD_TYPE=RELEASE \
         -D OpenCV_DIR=$opencv_dir \
         -D BOOST_ROOT=$boost_root \
-        -D G2O_EIGEN3_INCLUDE=$eigen_include_dir \
+        -D Eigen3_DIR=$eigen_root \
         -D Pangolin_DIR=$pangolin_dir ..
     # Build
     cmake --build . --config Release --parallel $((`nproc`+1)) -j $((`nproc`+1))

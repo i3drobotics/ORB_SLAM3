@@ -7,15 +7,12 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall   -O3")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
-#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
-
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-deprecated -O3 -march=native ")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-deprecated -O3 -march=native")
-
-set (CMAKE_INSTALL_UCRT_LIBRARIES true)
+if (NOT WIN32)
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall   -O3")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
+   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+endif()
 
 # Check C++11 or C++0x support
 include(CheckCXXCompilerFlag)
@@ -29,8 +26,8 @@ elseif(COMPILER_SUPPORTS_CXX0X)
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
    add_definitions(-DCOMPILEDWITHC0X)
    message(STATUS "Using flag -std=c++0x.")
-#else()
-#   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+else()
+   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
@@ -49,7 +46,14 @@ endif()
 MESSAGE("OPENCV VERSION:")
 MESSAGE(${OpenCV_VERSION})
 
-SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
+#SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
+find_package(Eigen3 3.1.0 REQUIRED)
+if(NOT Eigen3_FOUND)
+   message(FATAL_ERROR "Eigen3 not found.")
+else()
+   message("Found Eigen3")
+endif()
+
 find_package(Pangolin REQUIRED)
 if(NOT Pangolin_FOUND)
    message(FATAL_ERROR "Pangolin not found.")
@@ -140,7 +144,7 @@ endif (WIN32)
 add_subdirectory(Thirdparty/g2o)
 
 IF(WIN32)
-   set(DBoW_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/Release/DBoW2.lib)
+   set(DBoW2_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/Release/DBoW2.lib)
    set(g2o_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/Release/g2o.lib)
 else(WIN32)
    set(DBoW_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so)
@@ -151,14 +155,13 @@ endif(WIN32)
 target_link_libraries(${PROJECT_NAME}
    ${OpenCV_LIBS}
    ${Pangolin_LIBRARIES}
-   ${DBoW_LIBS}
+   ${DBoW2_LIBS}
    ${g2o_LIBS}
-   ${Boost_LIBRARIES}
-   ${extra_LIBS}
+   ${BOOST_SERIALIZATION_LIBRARY}
+   Boost::serialization
 )
 
 # Build examples
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 add_executable(rgbd_tum
 Examples/RGB-D/rgbd_tum.cc)

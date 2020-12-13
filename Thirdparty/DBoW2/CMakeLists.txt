@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(DBoW2)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall  -O3 -march=native")
+if (NOT WIN32)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall  -O3 -march=native")
+endif()
 
 set(HDRS_DBOW2
   DBoW2/BowVector.h
@@ -51,8 +53,5 @@ if (WIN32)
 else (WIN32)
   add_library(DBoW2 SHARED ${SRCS_DBOW2} ${SRCS_DUTILS})
 endif()
-target_link_libraries(DBoW2 
-  ${OpenCV_LIBS}
-  ${Boost_LIBRARIES}  
-)
+target_link_libraries(DBoW2 ${OpenCV_LIBS})
 
