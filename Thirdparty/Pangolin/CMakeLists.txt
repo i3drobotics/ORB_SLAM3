@@ -21,7 +21,11 @@ option( BUILD_TESTS "Build Tests" ON )
 option( BUILD_TOOLS "Build Examples" ON )
 option( BUILD_EXAMPLES "Build Tools" ON )
 
-set (CMAKE_CXX_STANDARD 17)
+if (WIN32)
+    set (CMAKE_CXX_STANDARD 17)
+else (WIN32)
+    set (CMAKE_CXX_STANDARD 14)
+endif
 
 if(_WIN_)
     option( BUILD_SHARED_LIBS    "Build Shared Library" OFF)
