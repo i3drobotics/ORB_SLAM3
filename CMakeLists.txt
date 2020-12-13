@@ -141,8 +141,6 @@ if (WIN32)
    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE:MULTIPLE")
 endif (WIN32)
 
-add_subdirectory(Thirdparty/g2o)
-
 IF(WIN32)
    set(DBoW2_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/Release/DBoW2.lib)
    set(g2o_LIBS ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/Release/g2o.lib)

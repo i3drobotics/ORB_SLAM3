@@ -24,7 +24,11 @@ cd Thirdparty/opencv
 cd $SCRIPTPATH
 
 echo "Configuring and building Thirdparty/DBoW2 ..."
-echo $OpenCV_DIR
 cd Thirdparty/DBoW2
+./build.sh
+cd $SCRIPTPATH
+
+echo "Configuring and building Thirdparty/g2o ..."
+cd Thirdparty/g2o
 ./build.sh
 cd $SCRIPTPATH

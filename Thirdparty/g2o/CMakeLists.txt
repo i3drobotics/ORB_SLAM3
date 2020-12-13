@@ -70,14 +70,13 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${g2o_CXX_FLAGS}")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
 
 # Find Eigen3
-SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
-FIND_PACKAGE(Eigen3 3.1.0 REQUIRED)
-IF(EIGEN3_FOUND)
+find_package(Eigen3 3.1.0 REQUIRED)
+if(NOT Eigen3_FOUND)
+   message(FATAL_ERROR "Eigen3 not found.")
+else()
   SET(G2O_EIGEN3_INCLUDE ${EIGEN3_INCLUDE_DIR} CACHE PATH "Directory of Eigen3")
-ELSE(EIGEN3_FOUND)
-  MESSAGE(FATAL_ERROR "Failed to find Eigen")
-  #SET(G2O_EIGEN3_INCLUDE "" CACHE PATH "Directory of Eigen3")
-ENDIF(EIGEN3_FOUND)
+  message("Found Eigen3")
+endif()
 
 message(${G2O_EIGEN3_INCLUDE})
 # Generate config.h
