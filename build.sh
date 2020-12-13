@@ -39,7 +39,7 @@ else
     cmake $cmake_options \
         -D CMAKE_BUILD_TYPE=RELEASE \
         -D OpenCV_DIR=$opencv_dir \
-        -D G2O_EIGEN3_INCLUDE=$eigen_include_dir \
+        -D Eigen3_DIR=$eigen_include_dir \
         -D Pangolin_DIR=$pangolin_dir ..
     # Build
     make -j$((`nproc`+1))
