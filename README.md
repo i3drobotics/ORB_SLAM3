@@ -1,5 +1,8 @@
 # ORB-SLAM3
 
+## Status
+![Build](https://github.com/i3drobotics/ORB_SLAM3/workflows/Build/badge.svg?event=push)
+
 ### V0.3: Beta version, 4 Sep 2020
 **Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
 
