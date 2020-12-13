@@ -23,7 +23,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
         cd boost_$boost_version_
 
         cmd.exe /c "bootstrap"
-        ./b2 --with-serialization address-model=64 link=static
+        ./b2 --with-serialization --toolset=msvc-14.2 architecture=x86 address-model=64 link=static
 
         cd $SCRIPTPATH
         rm $downloadfile
