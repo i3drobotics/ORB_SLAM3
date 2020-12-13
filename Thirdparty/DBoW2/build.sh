@@ -4,9 +4,12 @@ SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH
 
 install_folder=$SCRIPTPATH/install
-opencv_dir=$SCRIPTPATH/../opencv/install
-boost_root=$SCRIPTPATH/../boost/boost_1_74_0/stage/lib/cmake # (Windows only, Linux installs from apt-get)
-echo $boost_root
+if [[ "$OSTYPE" == "msys" ]]; then
+    boost_root=$SCRIPTPATH/../boost/boost_1_74_0/stage/lib/cmake # (Windows only, Linux installs from apt-get)
+    opencv_dir=$SCRIPTPATH/../opencv/install
+else
+    opencv_dir=$SCRIPTPATH/../opencv/install/lib/cmake/opencv4
+fi
 
 mkdir $SCRIPTPATH/build
 cd $SCRIPTPATH/build
