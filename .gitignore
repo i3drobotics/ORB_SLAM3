@@ -60,3 +60,5 @@ Datasets/EuRoC/MH*
 Datasets/EuRoC/V*
 Datasets/TUM_VI/dataset*
 *.pdf
+.vscode/*
+!.vscode/launch.json
