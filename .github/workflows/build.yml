@@ -22,8 +22,6 @@ jobs:
         steps:
           - uses: actions/checkout@v2
           - name: Install 3rdparty
-            shell: 
             run: ./build_thirdparty.sh
           - name: Build
-            shell: bash
             run: ./build.sh
