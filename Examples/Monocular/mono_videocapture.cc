@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    bool bFileName = (argc == 4);
+    bool bFileName = (argc == 5);
     string file_name;
     if (bFileName)
     {
