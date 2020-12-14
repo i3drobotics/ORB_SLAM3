@@ -1,5 +1,5 @@
 #!/bin/bash
-pathDatasetEuroc='Datasets/EuRoC' #Example, it is necesary to change it by the dataset path
+pathDatasetEuroc='Datasets/EuRoC'
 if [[ "$OSTYPE" == "msys" ]]; then
     releaseFolder='Release/' # Windows creates 'Release' folder when building
 else
