@@ -101,8 +101,10 @@ int main(int argc, char **argv)
     }
 
     // Stop all threads
-    SLAM.Shutdown();
+    SLAM.Shutdown(); //TODO fix Error 1400: Invalid window handle. When viewer is closed before shutdown
     cout << "SLAM Shutdown" << endl;
+
+    cap.release();
 
     // Save camera trajectory
     if (bFileName)

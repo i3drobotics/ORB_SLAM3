@@ -310,6 +310,7 @@ void Viewer::Run()
         //cv::waitKey(mT);
         if( cv::waitKey(mT) == 27 ){
             RequestFinish();
+            cv::destroyWindow("ORB-SLAM3: Current Frame");
         }; // stop capturing by pressing ESC 
 
         if(menuReset)

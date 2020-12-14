@@ -474,9 +474,6 @@ void System::Shutdown()
         }
         usleep(5000);
     }
-
-    if(mpViewer)
-        pangolin::BindToContext("ORB-SLAM3: Map Viewer");
 }
 
 
