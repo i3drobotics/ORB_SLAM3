@@ -25,7 +25,7 @@ if (WIN32)
     set (CMAKE_CXX_STANDARD 17)
 else (WIN32)
     set (CMAKE_CXX_STANDARD 14)
-endif
+endif()
 
 if(_WIN_)
     option( BUILD_SHARED_LIBS    "Build Shared Library" OFF)
