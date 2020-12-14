@@ -904,6 +904,12 @@ bool System::isLost()
     }
 }
 
+bool System::isViewerFinished(){
+    if(mpViewer)
+    {
+        return mpViewer->isFinished();
+    }
+}
 
 bool System::isFinished()
 {

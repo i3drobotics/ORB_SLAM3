@@ -177,6 +177,8 @@ public:
 
     void ChangeDataset();
 
+    bool isViewerFinished();
+
     //void SaveAtlas(int type);
 
 private:
