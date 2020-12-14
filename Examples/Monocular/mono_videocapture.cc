@@ -80,15 +80,29 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true); 
+    // get fps from settings
+    cv::FileStorage fSettings(argv[2], cv::FileStorage::READ);
+    bool ignore_fps = (int)fSettings["Camera.ignore_fps"] == 1;
+    int fps = fSettings["Camera.fps"];
 
+    double start_time = std::time(0);
+    double frame_time = 1.0/fps;
+
+    // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true);
+
+    int frame_count = 0;
     while(true){
         cv::Mat im;
         cap >> im;
         if( im.empty() ) break; // end of video stream
         
-        double tframe = std::time(0);
+        double tframe;
+        if (ignore_fps){
+            tframe = std::time(0);
+        } else {
+            tframe = start_time + (frame_time*frame_count);
+        }
 
         // Pass the image to the SLAM system
         cout << "tframe = " << tframe << endl;
@@ -98,6 +112,7 @@ int main(int argc, char **argv)
             cout << "Viewer closed" << endl;
             break;
         }
+        frame_count++;
     }
 
     // Stop all threads
