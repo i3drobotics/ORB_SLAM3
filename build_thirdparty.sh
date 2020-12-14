@@ -15,6 +15,7 @@ cd $SCRIPTPATH
 
 echo "Configuring and building Thirdparty/g2o ..."
 cd Thirdparty/g2o
+sudo chmod +x build.sh #TODO remove this. Needed untill access to linux machine to give permissions to file
 ./build.sh
 cd $SCRIPTPATH
 
