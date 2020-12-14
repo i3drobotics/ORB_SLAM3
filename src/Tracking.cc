@@ -1167,7 +1167,6 @@ void Tracking::PreintegrateIMU()
             }
         }
         if(bSleep)
-			//std::this_thread::sleep_for(std::chrono::microseconds(500));
             usleep(500);
     }
 
@@ -1400,7 +1399,6 @@ void Tracking::Track()
     if (bStepByStep)
     {
         while(!mbStep)
-			//std::this_thread::sleep_for(std::chrono::microseconds(500));
             usleep(500);
         mbStep = false;
     }
@@ -3358,7 +3356,6 @@ void Tracking::Reset(bool bLocMap)
     {
         mpViewer->RequestStop();
         while(!mpViewer->isStopped())
-			//std::this_thread::sleep_for(std::chrono::microseconds(3000));
             usleep(3000);
     }
 
@@ -3423,7 +3420,6 @@ void Tracking::ResetActiveMap(bool bLocMap)
     {
         mpViewer->RequestStop();
         while(!mpViewer->isStopped())
-			//std::this_thread::sleep_for(std::chrono::microseconds(3000));
             usleep(3000);
     }
 
@@ -3593,7 +3589,7 @@ void Tracking::UpdateFrameIMU(const float s, const IMU::Bias &b, KeyFrame* pCurr
 
     while(!mCurrentFrame.imuIsPreintegrated())
     {
-		//std::this_thread::sleep_for(std::chrono::microseconds(500));
+		//std::(std::chrono::microseconds(500));
         usleep(500);
     }
 

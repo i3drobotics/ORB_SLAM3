@@ -256,7 +256,6 @@ void LocalMapping::Run()
             while(isStopped() && !CheckFinish())
             {
                 // cout << "LM: usleep if is stopped" << endl;
-				//std::this_thread::sleep_for(std::chrono::microseconds(3000));
                 usleep(3000);
             }
             if(CheckFinish())
@@ -272,7 +271,6 @@ void LocalMapping::Run()
             break;
 
         // cout << "LM: normal usleep" << endl;
-		//std::this_thread::sleep_for(std::chrono::microseconds(3000));
         usleep(3000);
     }
 
@@ -1116,7 +1114,6 @@ void LocalMapping::RequestReset()
             if(!mbResetRequested)
                 break;
         }
-		//std::this_thread::sleep_for(std::chrono::microseconds(3000));
         usleep(3000);
     }
     cout << "LM: Map reset, Done!!!" << endl;
@@ -1139,7 +1136,6 @@ void LocalMapping::RequestResetActiveMap(Map* pMap)
             if(!mbResetRequestedActiveMap)
                 break;
         }
-		//std::this_thread::sleep_for(std::chrono::microseconds(3000));
         usleep(3000);
     }
     cout << "LM: Active map reset, Done!!!" << endl;

@@ -35,14 +35,17 @@
 
 using namespace std;
 
-void LoadImages(const string &strImagePath, const string &strPathTimes,
-                vector<string> &vstrImages, vector<double> &vTimeStamps);
+bool is_number(const std::string& s)
+{
+    return !s.empty() && std::find_if(s.begin(), 
+        s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+}
 
 int main(int argc, char **argv)
 {  
-    if(argc < 5)
+    if(argc != 4 && argc != 5)
     {
-        cerr << endl << "Usage: ./mono_webcam path_to_vocabulary path_to_settings device_index trajectory_file_name" << endl;
+        cerr << endl << "Usage: ./mono_webcam path_to_vocabulary path_to_settings device_index (trajectory_file_name)" << endl;
         return 1;
     }
 
@@ -54,17 +57,32 @@ int main(int argc, char **argv)
         cout << "file name: " << file_name << endl;
     }
 
-    cout.precision(17);
+    string device = argv[3];
+    bool bDeviceNum = false;
+    int device_num = 0;
+    if (is_number(device)){
+        bDeviceNum = true;
+        device_num = std::stoi(device);
+    }
 
-    // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true);
+    cout.precision(17);
 
     // Open Camera
     cv::VideoCapture cap;
-    if(!cap.open(0))
+    bool is_opened = false;
+    if (bDeviceNum){
+        is_opened = cap.open(device_num);
+    } else {
+        is_opened = cap.open(device);
+    }
+    if(!is_opened){
+        cerr << "Failed to open device: " << device << endl;
         return 0;
+    }
 
-    int ni = 0;
+    // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true); 
+
     while(true){
         cv::Mat im;
         cap >> im;
@@ -77,14 +95,14 @@ int main(int argc, char **argv)
         SLAM.TrackMonocular(im,tframe);
 
         if (SLAM.isViewerFinished()){
-            std::cout << "Viewer closed" << std::endl;
+            cout << "Viewer closed" << endl;
             break;
         }
     }
 
     // Stop all threads
     SLAM.Shutdown();
-    std::cout << "SLAM Shutdown" << std::endl;
+    cout << "SLAM Shutdown" << endl;
 
     // Save camera trajectory
     if (bFileName)

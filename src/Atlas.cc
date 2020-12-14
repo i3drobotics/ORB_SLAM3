@@ -216,7 +216,6 @@ Map* Atlas::GetCurrentMap()
     if(!mpCurrentMap)
         CreateNewMap();
     while(mpCurrentMap->IsBad())
-		//std::this_thread::sleep_for(std::chrono::microseconds(3000));
         usleep(3000);
 
     return mpCurrentMap;

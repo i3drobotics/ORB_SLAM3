@@ -234,7 +234,6 @@ void LoopClosing::Run()
             break;
         }
 
-		//std::this_thread::sleep_for(std::chrono::microseconds(5000));
         usleep(5000);
     }
 
@@ -1045,7 +1044,6 @@ void LoopClosing::CorrectLoop()
     // Wait until Local Mapping has effectively stopped
     while(!mpLocalMapper->isStopped())
     {
-		//std::this_thread::sleep_for(std::chrono::microseconds(1000));
         usleep(1000);
     }
 
@@ -1294,7 +1292,6 @@ void LoopClosing::MergeLocal()
     // Wait until Local Mapping has effectively stopped
     while(!mpLocalMapper->isStopped())
     {
-		//std::this_thread::sleep_for(std::chrono::microseconds(1000));
         usleep(1000);
     }
     Verbose::PrintMess("MERGE-VISUAL: Local Map stopped", Verbose::VERBOSITY_DEBUG);
@@ -1827,7 +1824,6 @@ void LoopClosing::MergeLocal()
         // Wait until Local Mapping has effectively stopped
         while(!mpLocalMapper->isStopped())
         {
-			//std::this_thread::sleep_for(std::chrono::microseconds(1000));
             usleep(1000);
         }
         Verbose::PrintMess("MERGE-VISUAL: Local Map stopped", Verbose::VERBOSITY_DEBUG);
@@ -1993,7 +1989,6 @@ void LoopClosing::MergeLocal2()
     // Wait until Local Mapping has effectively stopped
     while(!mpLocalMapper->isStopped())
     {
-		//std::this_thread::sleep_for(std::chrono::microseconds(1000));
         usleep(1000);
     }
     cout << "Local Map stopped" << endl;
@@ -2382,7 +2377,6 @@ void LoopClosing::RequestReset()
         if(!mbResetRequested)
             break;
         }
-		//std::this_thread::sleep_for(std::chrono::microseconds(5000));
         usleep(5000);
     }
 }
@@ -2402,7 +2396,6 @@ void LoopClosing::RequestResetActiveMap(Map *pMap)
             if(!mbResetActiveMapRequested)
                 break;
         }
-		//std::this_thread::sleep_for(std::chrono::microseconds(3000));
         usleep(3000);
     }
 }
@@ -2475,7 +2468,6 @@ void LoopClosing::RunGlobalBundleAdjustment(Map* pActiveMap, unsigned long nLoop
 
             while(!mpLocalMapper->isStopped() && !mpLocalMapper->isFinished())
             {
-				//std::this_thread::sleep_for(std::chrono::microseconds(1000));
                 usleep(1000);
             }
 
