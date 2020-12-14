@@ -24,7 +24,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
         -D BOOST_ROOT=$boost_root .. 
 
     # Build
-    cmake --build . --config Release --parallel $((`nproc`+1)) -j $((`nproc`+1))
+    cmake --build . --config Release --parallel $((`nproc`)) -j $((`nproc`))
 else
     # Setup CMake build
     cmake \

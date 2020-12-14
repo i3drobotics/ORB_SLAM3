@@ -16,7 +16,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
     cmake -D Eigen3_DIR=$eigen_root .. 
 
     # Build
-    cmake --build . --config Release --parallel $((`nproc`+1)) -j $((`nproc`+1))
+    cmake --build . --config Release --parallel $((`nproc`)) -j $((`nproc`))
 else
     # Setup CMake build
     cmake  -D Eigen3_DIR=$eigen_root .. 

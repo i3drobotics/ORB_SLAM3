@@ -33,7 +33,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
         -D Eigen3_DIR=$eigen_root \
         -D Pangolin_DIR=$pangolin_dir ..
     # Build
-    cmake --build . --config Release --parallel $((`nproc`+1)) -j $((`nproc`+1))
+    cmake --build . --config Release --parallel $((`nproc`)) -j $((`nproc`))
 else
     # Setup CMake build
     cmake $cmake_options \

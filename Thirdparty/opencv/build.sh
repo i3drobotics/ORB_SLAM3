@@ -47,7 +47,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
     cmake $cmake_options ..
 
     # Build and install OpenCV
-    cmake --build . --config Release --target install --parallel $((`nproc`+1)) -j $((`nproc`+1))
+    cmake --build . --config Release --target install --parallel $((`nproc`)) -j $((`nproc`))
 else
     # Install dependencies
     sudo apt-get install libjpeg8-dev libtiff5-dev libjasper-dev libpng12-dev

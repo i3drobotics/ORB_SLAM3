@@ -22,7 +22,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
         -D CMAKE_INSTALL_PREFIX=$install_folder .. 
 
     # Build
-    cmake --build . --config Release --target install --parallel $((`nproc`+1)) -j $((`nproc`+1))
+    cmake --build . --config Release --target install --parallel $((`nproc`)) -j $((`nproc`))
 else
     # Install dependencies
     sudo apt install libglew-dev
