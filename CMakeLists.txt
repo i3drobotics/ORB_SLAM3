@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 2.9)
 project(ORB_SLAM3)
 
+option(BUILD_EXAMPLES "Build examples" ON)
+
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
+
+# Define GNU standard installation directories
+include(GNUInstallDirs)
 
 if (NOT WIN32)
    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall   -O3")
@@ -17,6 +22,7 @@ endif()
 if (WIN32)
    set (CMAKE_CXX_STANDARD 11)
    add_definitions(-DCOMPILEDWITHC11)
+   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else (WIN32)
    #Check C++11 or C++0x support
    include(CheckCXXCompilerFlag)
@@ -35,8 +41,6 @@ else (WIN32)
    endif()
 endif()
 
-LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
-
 find_package(OpenCV 4)
 if(NOT OpenCV_FOUND)
    find_package(OpenCV 3)
@@ -51,7 +55,6 @@ endif()
 MESSAGE("OPENCV VERSION:")
 MESSAGE(${OpenCV_VERSION})
 
-#SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
 find_package(Eigen3 3.1.0 REQUIRED)
 if(NOT Eigen3_FOUND)
    message(FATAL_ERROR "Eigen3 not found.")
@@ -81,69 +84,39 @@ include_directories(
    ${Boost_INCLUDE_DIRS}
 )
 if (WIN32)
-   include_directories(${PROJECT_SOURCE_DIR}/winutil)
-   set(WIN_EXTRA_SRC winutil/usleep.cpp)
+   include_directories(${PROJECT_SOURCE_DIR}/include/winutil)
+   set(WIN_EXTRA_SRC src/winutil/usleep.cpp)
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-
-add_library(${PROJECT_NAME} STATIC
-src/System.cc
-src/Tracking.cc
-src/LocalMapping.cc
-src/LoopClosing.cc
-src/ORBextractor.cc
-src/ORBmatcher.cc
-src/FrameDrawer.cc
-src/Converter.cc
-src/MapPoint.cc
-src/KeyFrame.cc
-src/Atlas.cc
-src/Map.cc
-src/MapDrawer.cc
-src/Optimizer.cc
-src/PnPsolver.cc
-src/Frame.cc
-src/KeyFrameDatabase.cc
-src/Sim3Solver.cc
-src/Initializer.cc
-src/Viewer.cc
-src/ImuTypes.cc
-src/G2oTypes.cc
-src/CameraModels/Pinhole.cpp
-src/CameraModels/KannalaBrandt8.cpp
-src/OptimizableTypes.cpp
-src/MLPnPsolver.cpp
-include/System.h
-include/Tracking.h
-include/LocalMapping.h
-include/LoopClosing.h
-include/ORBextractor.h
-include/ORBmatcher.h
-include/FrameDrawer.h
-include/Converter.h
-include/MapPoint.h
-include/KeyFrame.h
-include/Atlas.h
-include/Map.h
-include/MapDrawer.h
-include/Optimizer.h
-include/PnPsolver.h
-include/Frame.h
-include/KeyFrameDatabase.h
-include/Sim3Solver.h
-include/Initializer.h
-include/Viewer.h
-include/ImuTypes.h
-include/G2oTypes.h
-include/CameraModels/GeometricCamera.h
-include/CameraModels/Pinhole.h
-include/CameraModels/KannalaBrandt8.h
-include/OptimizableTypes.h
-include/MLPnPsolver.h
-include/TwoViewReconstruction.h
-src/TwoViewReconstruction.cc
-${WIN_EXTRA_SRC}
+add_library(${PROJECT_NAME} SHARED
+   src/System.cc
+   src/Tracking.cc
+   src/LocalMapping.cc
+   src/LoopClosing.cc
+   src/ORBextractor.cc
+   src/ORBmatcher.cc
+   src/FrameDrawer.cc
+   src/Converter.cc
+   src/MapPoint.cc
+   src/KeyFrame.cc
+   src/Atlas.cc
+   src/Map.cc
+   src/MapDrawer.cc
+   src/Optimizer.cc
+   src/PnPsolver.cc
+   src/Frame.cc
+   src/KeyFrameDatabase.cc
+   src/Sim3Solver.cc
+   src/Initializer.cc
+   src/Viewer.cc
+   src/ImuTypes.cc
+   src/G2oTypes.cc
+   src/CameraModels/Pinhole.cpp
+   src/CameraModels/KannalaBrandt8.cpp
+   src/OptimizableTypes.cpp
+   src/MLPnPsolver.cpp
+   src/TwoViewReconstruction.cc
+   ${WIN_EXTRA_SRC}
 )
 
 if (WIN32)
@@ -165,75 +138,136 @@ target_link_libraries(${PROJECT_NAME}
    ${Pangolin_LIBRARIES}
    ${DBoW2_LIBS}
    ${g2o_LIBS}
-   ${BOOST_SERIALIZATION_LIBRARY}
    Boost::serialization
 )
 
-# Build examples
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
-add_executable(rgbd_tum
-Examples/RGB-D/rgbd_tum.cc)
-target_link_libraries(rgbd_tum ${PROJECT_NAME})
+# Include headers in library
+target_include_directories(${PROJECT_NAME} PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<INSTALL_INTERFACE:include>
+   PRIVATE src)
 
+# Include version in library
+set_target_properties(${PROJECT_NAME} PROPERTIES
+   VERSION ${PROJECT_VERSION}
+   SOVERSION ${PROJECT_VERSION})
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
+# Export cmake config
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
+   ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-add_executable(stereo_kitti
-Examples/Stereo/stereo_kitti.cc)
-target_link_libraries(stereo_kitti ${PROJECT_NAME})
+# Install headers in install folder
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-add_executable(stereo_euroc
-Examples/Stereo/stereo_euroc.cc)
-target_link_libraries(stereo_euroc ${PROJECT_NAME})
+# Install cmake config in install folder
+install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 
-add_executable(stereo_tum_vi
-Examples/Stereo/stereo_tum_vi.cc)
-target_link_libraries(stereo_tum_vi ${PROJECT_NAME})
+# Install cmake targets in install folder
+export(TARGETS ${PROJECT_NAME} FILE ${PROJECT_NAME}Config.cmake)
 
+if(BUILD_EXAMPLES)
+   # Build examples
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
+   add_executable(rgbd_tum
+   Examples/RGB-D/rgbd_tum.cc)
+   target_link_libraries(rgbd_tum PRIVATE ${PROJECT_NAME})
 
-add_executable(mono_tum
-Examples/Monocular/mono_tum.cc)
-target_link_libraries(mono_tum ${PROJECT_NAME})
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
 
-add_executable(mono_kitti
-Examples/Monocular/mono_kitti.cc)
-target_link_libraries(mono_kitti ${PROJECT_NAME})
+   add_executable(stereo_kitti
+   Examples/Stereo/stereo_kitti.cc)
+   target_link_libraries(stereo_kitti PRIVATE ${PROJECT_NAME})
 
-add_executable(mono_euroc
-Examples/Monocular/mono_euroc.cc)
-target_link_libraries(mono_euroc ${PROJECT_NAME})
+   add_executable(stereo_euroc
+   Examples/Stereo/stereo_euroc.cc)
+   target_link_libraries(stereo_euroc PRIVATE ${PROJECT_NAME})
 
-add_executable(mono_tum_vi
-Examples/Monocular/mono_tum_vi.cc)
-target_link_libraries(mono_tum_vi ${PROJECT_NAME})
+   add_executable(stereo_tum_vi
+   Examples/Stereo/stereo_tum_vi.cc)
+   target_link_libraries(stereo_tum_vi PRIVATE ${PROJECT_NAME})
 
-add_executable(mono_videocapture
-Examples/Monocular/mono_videocapture.cc)
-target_link_libraries(mono_videocapture ${PROJECT_NAME})
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
+   add_executable(mono_tum
+   Examples/Monocular/mono_tum.cc)
+   target_link_libraries(mono_tum PRIVATE ${PROJECT_NAME})
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular-Inertial)
+   add_executable(mono_kitti
+   Examples/Monocular/mono_kitti.cc)
+   target_link_libraries(mono_kitti PRIVATE ${PROJECT_NAME})
 
-add_executable(mono_inertial_euroc
-Examples/Monocular-Inertial/mono_inertial_euroc.cc)
-target_link_libraries(mono_inertial_euroc ${PROJECT_NAME})
+   add_executable(mono_euroc
+   Examples/Monocular/mono_euroc.cc)
+   target_link_libraries(mono_euroc PRIVATE ${PROJECT_NAME})
 
-add_executable(mono_inertial_tum_vi
-Examples/Monocular-Inertial/mono_inertial_tum_vi.cc)
-target_link_libraries(mono_inertial_tum_vi ${PROJECT_NAME})
+   add_executable(mono_tum_vi
+   Examples/Monocular/mono_tum_vi.cc)
+   target_link_libraries(mono_tum_vi PRIVATE ${PROJECT_NAME})
 
+   add_executable(mono_videocapture
+   Examples/Monocular/mono_videocapture.cc)
+   target_link_libraries(mono_videocapture PRIVATE ${PROJECT_NAME})
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo-Inertial)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular-Inertial)
 
-add_executable(stereo_inertial_euroc
-Examples/Stereo-Inertial/stereo_inertial_euroc.cc)
-target_link_libraries(stereo_inertial_euroc ${PROJECT_NAME})
+   add_executable(mono_inertial_euroc
+   Examples/Monocular-Inertial/mono_inertial_euroc.cc)
+   target_link_libraries(mono_inertial_euroc PRIVATE ${PROJECT_NAME})
 
+   add_executable(mono_inertial_tum_vi
+   Examples/Monocular-Inertial/mono_inertial_tum_vi.cc)
+   target_link_libraries(mono_inertial_tum_vi PRIVATE ${PROJECT_NAME})
 
-add_executable(stereo_inertial_tum_vi
-Examples/Stereo-Inertial/stereo_inertial_tum_vi.cc)
-target_link_libraries(stereo_inertial_tum_vi ${PROJECT_NAME})
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo-Inertial)
 
+   add_executable(stereo_inertial_euroc
+   Examples/Stereo-Inertial/stereo_inertial_euroc.cc)
+   target_link_libraries(stereo_inertial_euroc PRIVATE ${PROJECT_NAME})
+
+   add_executable(stereo_inertial_tum_vi
+   Examples/Stereo-Inertial/stereo_inertial_tum_vi.cc)
+   target_link_libraries(stereo_inertial_tum_vi PRIVATE ${PROJECT_NAME})
+
+   if (WIN32)
+      # Install DLLs to example folders
+      set(OpenCV_DLLS
+         ${OpenCV_DIR}/x64/vc16/bin/opencv_world450.dll
+         ${OpenCV_DIR}/x64/vc16/bin/opencv_videoio_ffmpeg450_64.dll
+      )
+      set(ORBSLAM3_DLLS
+         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}.dll
+      )
+      add_custom_command(TARGET rgbd_tum POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:rgbd_tum>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:rgbd_tum>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_kitti>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_kitti>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_tum>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_tum>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_kitti>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_kitti>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_videocapture>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_videocapture>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_inertial_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_inertial_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_inertial_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_inertial_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_inertial_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_inertial_euroc>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_inertial_tum_vi>
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_inertial_tum_vi>
+      )
+   endif()
+endif()
 
