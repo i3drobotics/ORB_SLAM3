@@ -168,106 +168,84 @@ install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 export(TARGETS ${PROJECT_NAME} FILE ${PROJECT_NAME}Config.cmake)
 
 if(BUILD_EXAMPLES)
-   # Build examples
-
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
-   add_executable(rgbd_tum
-   Examples/RGB-D/rgbd_tum.cc)
-   target_link_libraries(rgbd_tum PRIVATE ${PROJECT_NAME})
-
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
-
-   add_executable(stereo_kitti
-   Examples/Stereo/stereo_kitti.cc)
-   target_link_libraries(stereo_kitti PRIVATE ${PROJECT_NAME})
-
-   add_executable(stereo_euroc
-   Examples/Stereo/stereo_euroc.cc)
-   target_link_libraries(stereo_euroc PRIVATE ${PROJECT_NAME})
-
-   add_executable(stereo_tum_vi
-   Examples/Stereo/stereo_tum_vi.cc)
-   target_link_libraries(stereo_tum_vi PRIVATE ${PROJECT_NAME})
-
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
-
-   add_executable(mono_tum
-   Examples/Monocular/mono_tum.cc)
-   target_link_libraries(mono_tum PRIVATE ${PROJECT_NAME})
-
-   add_executable(mono_kitti
-   Examples/Monocular/mono_kitti.cc)
-   target_link_libraries(mono_kitti PRIVATE ${PROJECT_NAME})
-
-   add_executable(mono_euroc
-   Examples/Monocular/mono_euroc.cc)
-   target_link_libraries(mono_euroc PRIVATE ${PROJECT_NAME})
-
-   add_executable(mono_tum_vi
-   Examples/Monocular/mono_tum_vi.cc)
-   target_link_libraries(mono_tum_vi PRIVATE ${PROJECT_NAME})
-
-   add_executable(mono_videocapture
-   Examples/Monocular/mono_videocapture.cc)
-   target_link_libraries(mono_videocapture PRIVATE ${PROJECT_NAME})
-
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular-Inertial)
-
-   add_executable(mono_inertial_euroc
-   Examples/Monocular-Inertial/mono_inertial_euroc.cc)
-   target_link_libraries(mono_inertial_euroc PRIVATE ${PROJECT_NAME})
-
-   add_executable(mono_inertial_tum_vi
-   Examples/Monocular-Inertial/mono_inertial_tum_vi.cc)
-   target_link_libraries(mono_inertial_tum_vi PRIVATE ${PROJECT_NAME})
-
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo-Inertial)
-
-   add_executable(stereo_inertial_euroc
-   Examples/Stereo-Inertial/stereo_inertial_euroc.cc)
-   target_link_libraries(stereo_inertial_euroc PRIVATE ${PROJECT_NAME})
-
-   add_executable(stereo_inertial_tum_vi
-   Examples/Stereo-Inertial/stereo_inertial_tum_vi.cc)
-   target_link_libraries(stereo_inertial_tum_vi PRIVATE ${PROJECT_NAME})
-
    if (WIN32)
-      # Install DLLs to example folders
+      # Define dlls files to copy to executables
       set(OpenCV_DLLS
          ${OpenCV_DIR}/x64/vc16/bin/opencv_world450.dll
          ${OpenCV_DIR}/x64/vc16/bin/opencv_videoio_ffmpeg450_64.dll
       )
       set(ORBSLAM3_DLLS
+         ${OpenCV_DLLS}
          ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}.dll
       )
-      add_custom_command(TARGET rgbd_tum POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:rgbd_tum>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:rgbd_tum>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_kitti>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_kitti>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_tum>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_tum>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_kitti>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_kitti>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_videocapture>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_videocapture>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_inertial_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_inertial_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:mono_inertial_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:mono_inertial_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_inertial_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_inertial_euroc>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OpenCV_DLLS} $<TARGET_FILE_DIR:stereo_inertial_tum_vi>
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ORBSLAM3_DLLS} $<TARGET_FILE_DIR:stereo_inertial_tum_vi>
-      )
    endif()
+
+   # Create directory structure for examples
+   install(DIRECTORY DESTINATION Examples/Apps)
+
+   if (WIN32)
+      # Copy dlls to examples install folder
+      install(FILES ${ORBSLAM3_DLLS} DESTINATION Examples/Apps)
+   endif()
+   # Copy example data to install folder
+   install(DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Apps/Data DESTINATION Examples)
+   # Copy scripts for downloading datasets to install folder
+   install(DIRECTORY ${PROJECT_SOURCE_DIR}/Datasets DESTINATION Examples FILES_MATCHING PATTERN "*.sh")
+   # Copy Vocabulary file to install folder
+   install(DIRECTORY ${PROJECT_SOURCE_DIR}/Vocabulary DESTINATION Examples FILES_MATCHING PATTERN "*.txt.tar.gz")
+   
+   # Build examples
+   add_executable(mono_tum Examples/Apps/src/mono_tum.cc)
+   target_link_libraries(mono_tum PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_tum DESTINATION Examples/Apps)
+
+   add_executable(mono_kitti Examples/Apps/src/mono_kitti.cc)
+   target_link_libraries(mono_kitti PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_kitti DESTINATION Examples/Apps)
+
+   add_executable(mono_euroc Examples/Apps/src/mono_euroc.cc)
+   target_link_libraries(mono_euroc PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_euroc DESTINATION Examples/Apps)
+
+   add_executable(mono_tum_vi Examples/Apps/src/mono_tum_vi.cc)
+   target_link_libraries(mono_tum_vi PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_tum_vi DESTINATION Examples/Apps)
+
+   add_executable(mono_videocapture Examples/Apps/src/mono_videocapture.cc)
+   target_link_libraries(mono_videocapture PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_videocapture DESTINATION Examples/Apps)
+
+   add_executable(mono_inertial_euroc Examples/Apps/src/mono_inertial_euroc.cc)
+   target_link_libraries(mono_inertial_euroc PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_inertial_euroc DESTINATION Examples/Apps)
+
+   add_executable(mono_inertial_tum_vi Examples/Apps/src/mono_inertial_tum_vi.cc)
+   target_link_libraries(mono_inertial_tum_vi PRIVATE ${PROJECT_NAME})
+   install(TARGETS mono_inertial_tum_vi DESTINATION Examples/Apps)
+
+   add_executable(stereo_kitti Examples/Apps/src/stereo_kitti.cc)
+   target_link_libraries(stereo_kitti PRIVATE ${PROJECT_NAME})
+   install(TARGETS stereo_kitti DESTINATION Examples/Apps)
+
+   add_executable(stereo_euroc Examples/Apps/src/stereo_euroc.cc)
+   target_link_libraries(stereo_euroc PRIVATE ${PROJECT_NAME})
+   install(TARGETS stereo_euroc DESTINATION Examples/Apps)
+
+   add_executable(stereo_tum_vi Examples/Apps/src/stereo_tum_vi.cc)
+   target_link_libraries(stereo_tum_vi PRIVATE ${PROJECT_NAME})
+   install(TARGETS stereo_tum_vi DESTINATION Examples/Apps)
+
+   add_executable(stereo_inertial_euroc Examples/Apps/src/stereo_inertial_euroc.cc)
+   target_link_libraries(stereo_inertial_euroc PRIVATE ${PROJECT_NAME})
+   install(TARGETS stereo_inertial_euroc DESTINATION Examples/Apps)
+
+   add_executable(stereo_inertial_tum_vi Examples/Apps/src/stereo_inertial_tum_vi.cc)
+   target_link_libraries(stereo_inertial_tum_vi PRIVATE ${PROJECT_NAME})
+   install(TARGETS stereo_inertial_tum_vi DESTINATION Examples/Apps)
+
+   add_executable(rgbd_tum Examples/Apps/src/rgbd_tum.cc)
+   target_link_libraries(rgbd_tum PRIVATE ${PROJECT_NAME})
+   install(TARGETS rgbd_tum DESTINATION Examples/Apps)
+
 endif()
 
