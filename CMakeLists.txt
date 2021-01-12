@@ -235,6 +235,10 @@ if(BUILD_EXAMPLES)
    target_link_libraries(stereo_tum_vi PRIVATE ${PROJECT_NAME})
    install(TARGETS stereo_tum_vi DESTINATION Examples/Apps)
 
+   add_executable(stereo_videocapture Examples/Apps/src/stereo_videocapture.cc)
+   target_link_libraries(stereo_videocapture PRIVATE ${PROJECT_NAME})
+   install(TARGETS stereo_videocapture DESTINATION Examples/Apps)
+
    add_executable(stereo_inertial_euroc Examples/Apps/src/stereo_inertial_euroc.cc)
    target_link_libraries(stereo_inertial_euroc PRIVATE ${PROJECT_NAME})
    install(TARGETS stereo_inertial_euroc DESTINATION Examples/Apps)
