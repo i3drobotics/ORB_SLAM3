@@ -61,3 +61,4 @@ Datasets/TUM_VI/dataset*
 *.pdf
 .vscode/*
 !.vscode/launch.json
+*.ply

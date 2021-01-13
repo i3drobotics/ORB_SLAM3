@@ -53,39 +53,88 @@ static void normaliseDisparity(cv::Mat inDisparity, cv::Mat &outNormalisedDispar
     outNormalisedDisparity = disparity_norm;
 }
 
-void pointCloudFromDepthImage(cv::Mat depth, cv::Mat &point_cloud){
-    cv::Mat flat_depth = depth.reshape(1, depth.rows * depth.cols);
-    point_cloud = cv::Mat::zeros(cv::Size(3, depth.rows * depth.cols), CV_32FC1);
-    for (size_t i = 0, end = depth.rows * depth.cols; i < end; ++i) {
-        float x = flat_depth.at<cv::Point3f>(i).x;
-        float y = flat_depth.at<cv::Point3f>(i).y;
-        float z = flat_depth.at<cv::Point3f>(i).z;
-        point_cloud.at<float>(0,i) = x;
-        point_cloud.at<float>(1,i) = y;
-        point_cloud.at<float>(2,i) = z;
-    }
-}
-
-void savePointCloud(cv::Mat point_cloud, std::string filename){
+void savePointCloud(cv::Mat point_cloud, cv::Mat point_colors, std::string filename){
     ofstream outfile(filename);
     outfile << "ply\n" << "format ascii 1.0\n" << "comment I3DR point cloud\n";
     outfile << "element vertex " << point_cloud.rows << "\n";
     outfile << "property float x\n" << "property float y\n" << "property float z\n";
-    outfile << "property float red\n" << "property float green\n" << "property float blue\n";
+    outfile << "property uchar red\n" << "property uchar green\n" << "property uchar blue\n";
     outfile << "end_header\n";
-    for (size_t i = 0, end = point_cloud.rows; i < end; ++i) {
-        float x = point_cloud.at<float>(0,i);
-        float y = point_cloud.at<float>(1,i);
-        float z = point_cloud.at<float>(2,i);
-        outfile << x << " ";
-        outfile << y << " ";
-        outfile << z << " ";
-        outfile << 0 << " ";
-        outfile << 0 << " ";
-        outfile << 0 << " ";
+    for (size_t i = 0; i < point_cloud.rows; i++) {
+        outfile << point_cloud.at<float>(i,0) << " "; //x
+        outfile << point_cloud.at<float>(i,1) << " "; //y
+        outfile << point_cloud.at<float>(i,2) << " "; //z
+        outfile << (int)point_colors.at<uchar>(i,0) << " "; //r
+        outfile << (int)point_colors.at<uchar>(i,1) << " "; //g
+        outfile << (int)point_colors.at<uchar>(i,2) << " "; //b
         outfile << "\n";
     }
     //outfile.close();
+}
+
+void reprojectImageTo3D(cv::Mat disparity, cv::Mat image, cv::Mat Q, cv::Mat &depth, cv::Mat &depthColors, float max_z = 10000){
+    cv::Mat disparity16;
+    disparity.copyTo(disparity16);
+
+    if (Q.empty() || disparity16.empty()) {
+        return;
+    }
+
+    depth = cv::Mat::zeros(cv::Size(3, 1), CV_32FC1);
+    depthColors = cv::Mat::zeros(cv::Size(3, 1), CV_8UC1);
+
+    float wz = Q.at<float>(2, 3);
+    float q03 = Q.at<float>(0, 3);
+    float q13 = Q.at<float>(1, 3);
+    float q32 = Q.at<float>(3, 2);
+    float q33 = Q.at<float>(3, 3);
+    float w, d;
+    uchar intensity;
+
+    float xyz[3] = {0,0,0};
+    uchar rgb[3] = {0,0,0};
+    int n = 1;
+
+    for (int i = 0; i < disparity16.rows; i++)
+    {
+        for (int j = 0; j < disparity16.cols; j++)
+        {
+            d = disparity16.at<float>(i, j);
+            if (d != 0)
+            {
+                w = (d * q32) + q33;
+                xyz[0] = (j + q03) / w;
+                xyz[1] = (i + q13) / w;
+                xyz[2] = wz / w;
+
+                if (w > 0 && xyz[2] > 0 && xyz[2] < max_z){ // negative W or Z which is not possible (behind camera)
+                    if (image.type() == CV_8UC1){
+                        // MONO8
+                        intensity = image.at<uchar>(i,j);
+                        rgb[0] = intensity;
+                        rgb[1] = intensity;
+                        rgb[2] = intensity;
+                    } else if (image.type() == CV_8UC3){
+                        // BGR8
+                        rgb[2] = image.at<cv::Vec3b>(i,j)[0];
+                        rgb[1] = image.at<cv::Vec3b>(i,j)[1];
+                        rgb[0] = image.at<cv::Vec3b>(i,j)[2];
+                    } else {
+                        rgb[0] = 0;
+                        rgb[1] = 0;
+                        rgb[2] = 0;
+                        //qDebug() << "Invalid image type. MUST be CV_8UC1 or CV_8UC3";
+                    }
+                    
+                    cv::Mat point = cv::Mat(1, 3, CV_32FC1, &xyz);
+                    cv::Mat color = cv::Mat(1, 3, CV_8UC1, &rgb);
+                    //std::cout << "(" << rgb[0] << "," << rgb[1] << "," << rgb[2] << ")" << std::endl;
+                    depth.push_back(point);
+                    depthColors.push_back(color);
+                }
+            }
+        }
+    }
 }
 
 int main(int argc, char **argv)
@@ -101,7 +150,7 @@ int main(int argc, char **argv)
     if (bFileName)
     {
         file_name = string(argv[argc-1]);
-        cout << "file name: " << file_name << endl;
+        std::cout << "file name: " << file_name << std::endl;
     }
 
     string device = argv[3];
@@ -112,7 +161,7 @@ int main(int argc, char **argv)
         device_num = std::stoi(device);
     }
 
-    cout.precision(17);
+    std::cout.precision(17);
 
     // Open Camera
     cv::VideoCapture cap;
@@ -193,10 +242,15 @@ int main(int argc, char **argv)
     Q.convertTo(Q, CV_32F);
 
     // Create stereo matcher
-    cv::Ptr<cv::StereoBM> cvStereoBM = cv::StereoBM::create(0,21);
+    cv::Ptr<cv::StereoBM> cvStereoBM = cv::StereoBM::create(160,15);
+    //cvStereoBM->setMinDisparity(-88);
+    cvStereoBM->setSpeckleWindowSize(500);
+    cvStereoBM->setSpeckleRange(500);
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO, true);
+
+    float max_z = 10;
 
     int frame_count = 0;
     while(true){
@@ -226,12 +280,14 @@ int main(int argc, char **argv)
         // Pass the image to the SLAM system
         cv::Mat pose = SLAM.TrackStereo(imLeftRect,imRightRect,tframe, vector<ORB_SLAM3::IMU::Point>());
         int state = SLAM.GetTrackingState();
-        std::cout << "(" << pose.at<float>(0,3) << "," << pose.at<float>(1,3) << "," << pose.at<float>(2,3) << ")" << std::endl;
+        //std::cout << "(" << pose.at<float>(0,3) << "," << pose.at<float>(1,3) << "," << pose.at<float>(2,3) << ")" << std::endl;
 
         if (state == ORB_SLAM3::Tracking::eTrackingState::OK){
             //Calculated disparity image
             cv::Mat disp;
             cvStereoBM->compute(imLeftRect,imRightRect,disp);
+            disp.convertTo(disp, CV_32F);
+            disp = disp / 16;
 
             //Display disparity image
             cv::Mat disp_norm;
@@ -239,12 +295,11 @@ int main(int argc, char **argv)
             cv::imshow("Disparity",disp_norm);
 
             //Calculate depth image from disparity image
-            cv::Mat depth;
-            cv::reprojectImageTo3D(disp,depth,Q,false,CV_32F);
-
-            //Convert depth image to point cloud
-            cv::Mat point_cloud;
-            pointCloudFromDepthImage(depth,point_cloud);
+            //TODO: multiply Q by pose rather than transforming cloud by pose for better effeciency
+            cv::Mat depth, depthColors;
+            reprojectImageTo3D(disp,imLeftRect,Q,depth,depthColors,max_z);
+            cv::Mat point_cloud = depth.clone();
+            cv::Mat point_colors = depthColors.clone();
 
             //Add W=1 column to point cloud for use with transformation matrix
             cv::Mat w_col = cv::Mat::ones(cv::Size(1,point_cloud.rows),CV_32FC1);
@@ -261,14 +316,13 @@ int main(int argc, char **argv)
             int key = cv::waitKey(1);
             if (key == 13){ //Enter pressed
                 std::cout << "Saving cloud..." << std::endl;
-                std::string point_cloud_filename = "PointCloud.ply";
-                //savePointCloud(point_cloud_rel,point_cloud_filename);
-                savePointCloud(point_cloud,point_cloud_filename);
+                std::string point_cloud_filename = "PointCloud_"+std::to_string(tframe)+".ply";
+                savePointCloud(point_cloud_rel,point_colors,point_cloud_filename);
             }
         }
 
         if (SLAM.isViewerFinished()){
-            cout << "Viewer closed" << endl;
+            std::cout << "Viewer closed" << endl;
             break;
         }
         frame_count++;
@@ -276,7 +330,7 @@ int main(int argc, char **argv)
 
     // Stop all threads
     SLAM.Shutdown(); //TODO fix Error 1400: Invalid window handle. When viewer is closed before shutdown
-    cout << "SLAM Shutdown" << endl;
+    std::cout << "SLAM Shutdown" << endl;
 
     cap.release();
 
